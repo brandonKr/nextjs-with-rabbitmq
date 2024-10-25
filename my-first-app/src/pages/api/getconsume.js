@@ -1,30 +1,32 @@
 import amqConnection from "@/amq/amqConnection";
 
 let channel;
+let parsedMessage;
 
 const handleIncomingNotification = (msg) => {
+    
     try {
-  
-      const parsedMessage = JSON.parse(msg);
-  
-      console.log(`Received Notification`, parsedMessage);
-  
-      // Implement your own notification flow
-  
+      parsedMessage = JSON.parse(msg);
+   
     } catch (error) {
       console.error(`Error While Parsing the message`);
+    } finally {
+        return parsedMessage;
     }
-  };
+};
 
 
 export default async function handler(req, res) {
-    await getConsume().then(()=>{
-        res.status(200).json({ message: 'success' });
-    });
+        amqConnection.consume(handleIncomingNotification); 
+        console.log('msg', parsedMessage);
+        res.status(200).json(parsedMessage);
+    
 }
 
-export async function getConsume(){    
-    amqConnection.consume(handleIncomingNotification, (msg) => {
-        console.log('수신완료');
+export async function getConsume(){   
+    let msg = "123"; 
+    const queuemsg = amqConnection.consume(handleIncomingNotification, (msg) => {
+      msg = msg;
     });
+    return queuemsg;
 }

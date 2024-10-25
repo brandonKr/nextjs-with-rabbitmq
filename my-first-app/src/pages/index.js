@@ -18,21 +18,21 @@ export default function Home() {
 						</Link>
 						<Link href="/api/createque">
 							<div className={styles.card}>
-								<h3>Call queue &rarr;</h3>
-								<p>배송로봇 queue	 생성 호출 API 샘플</p>
+								<h3>Call queue Sample &rarr;</h3>
+								<p>amq create queue	 생성 호출 API 샘플</p>
 								<p>호출 URL : /api/createque</p>
 							</div>
 						</Link>
 						<Link href="/api/getconsume">
 							<div className={styles.card}>
-								<h3>process.browser &rarr;</h3>
+								<h3>amp consume sample &rarr;</h3>
 								<p>배송로봇 consumer 생성 호출 API 샘플</p>
 								<p>호출 URL : /api/getconsume</p>
 							</div>
 						</Link>
                         <Link href="/example/fetch_sample">
 							<div className={styles.card}>
-								<h3>process.browser &rarr;</h3>
+								<h3>Fech data sample &rarr;</h3>
 								<p>api fetch 데이터 Sample</p>
 								<p>호출 URL : /example/fetch_sample</p>
 							</div>
