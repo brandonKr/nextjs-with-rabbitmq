@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import mqConnection from '@/mq/mqconnection';
 
 export default async function handler(req,res){
+  try {
     const data = req.body;
     const exchange = 'robot_ex'  //exchange 메인서버(?) {타입 업체와 협의 해서 결정}
     const queue = 'order'        //메세지를 저장하는하는 역할 {타입 업체와 협의 해서 결정}
@@ -10,9 +11,12 @@ export default async function handler(req,res){
     await mqConnection.connect();
     const channel = mqConnection.channel;
 
-    await channel.assertExchange(exchange,'direct'); //exchange 만드는 방법이 여러개 있으나 direct로 함 (direct,fanout,topic,headers)
-    await channel.assertQueue('order'); // queue를 생성한다. 
-    await channel.bindQueue(queue,exchange,route); //excahge 와 queue를 rouet를 사용하여 연결한다.
+     // Exchange, Queue 설정
+    await Promise.all([
+      channel.assertExchange(exchange, 'direct'),
+      channel.assertQueue(queue),
+      channel.bindQueue(queue, exchange, route)
+    ]);
 
     //메세지 발행
     const sent = channel.publish(
@@ -24,20 +28,21 @@ export default async function handler(req,res){
     //메세지 발행이 성공 했으면?
     if (sent){
         console.info(
-          `- Sent message to ${exchange} -> ${route} ${JSON.stringify(
-            data
-          )}`
-        )
-        // await mqConnection.close();
-        // 메세지 발행 후 연결 종료 하려고 했는데 이러면 exchange 서버가 닫힘
-        res.status(200).json(data);
-    }else{
-        console.error(
-          `Fail sending message to ${exchange} -> ${
-            process.env.TRX_ROUTE
-          }
-          ${JSON.stringify(data)}`
-        );
-      res.status(200).json(data);
-    }
+          `- 메세지 전송 성공:  ${exchange} -> ${route}`,data);
+          return res.status(200).json({ 
+            success: true, 
+            message: '메세지가 성공적으로 전송되었습니다',
+            data 
+          });
+        }
+    throw new Error('메세지 전송 실패');
+
+  } catch (error) {
+    console.error('메세지 전송 중 오류 발생:', error);
+    return res.status(500).json({ 
+        success: false,
+        message: '메세지 전송 중 오류가 발생했습니다',
+        error: error.message
+    });
+  }
 }
