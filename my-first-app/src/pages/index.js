@@ -16,18 +16,19 @@ export default function Home() {
 								<p>호출 URL : /api/hello</p>
 							</div>
 						</Link>
-						<Link href="/api/createque">
+						<Link href="/api/postque">
 							<div className={styles.card}>
 								<h3>Call queue Sample &rarr;</h3>
 								<p>amq create queue	 생성 호출 API 샘플</p>
-								<p>호출 URL : /api/createque</p>
+								<p>rest api 툴 가지고 body 에 담아서 호출 해야함</p>
+								<p>호출 URL : /api/postque</p>
 							</div>
 						</Link>
-						<Link href="/api/getconsume">
+						<Link href="/">
 							<div className={styles.card}>
 								<h3>amp consume sample &rarr;</h3>
-								<p>배송로봇 consumer 생성 호출 API 샘플</p>
-								<p>호출 URL : /api/getconsume</p>
+								<p>clinet 형태로 서버 로딩 되면서 자동 실행</p>
+								<p>terminal 에 있는 로그로 확인할 것</p>
 							</div>
 						</Link>
                         <Link href="/example/fetch_sample">
