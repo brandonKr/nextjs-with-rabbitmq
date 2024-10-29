@@ -1,7 +1,14 @@
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import styles from '../styles/Home.module.css';
 
+import TestFrom from '../components/TesForm';
+
+
 export default function Home() {
+
+	const [open, setOpen] = useState(false);
+
 	return (
 		<>
 			<div className={styles.container}>
@@ -16,7 +23,7 @@ export default function Home() {
 								<p>호출 URL : /api/hello</p>
 							</div>
 						</Link>
-						<Link href="/api/postque">
+						<Link href="/#" onClick={() => setOpen(true)}>
 							<div className={styles.card}>
 								<h3>Call queue Sample &rarr;</h3>
 								<p>amq create queue	 생성 호출 API 샘플</p>
@@ -41,6 +48,7 @@ export default function Home() {
 					</div>
 				</main>
 			</div>
+			<TestFrom open={open} setOpen={setOpen} />
 		</>
 	);
 }

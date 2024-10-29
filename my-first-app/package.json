@@ -5,20 +5,28 @@
   "scripts": {
     "dev": "concurrently \"node src/consumer.js\" \"next dev\"",
     "build": "next build",
-    "start": "concurrently \"node src/consumer.js\" \"next start\"" ,
+    "start": "concurrently \"node src/consumer.js\" \"next start\"",
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.1.5",
     "amqplib": "^0.10.4",
+    "axios": "^1.7.7",
+    "concurrently": "^9.0.1",
     "dotenv": "^16.4.5",
+    "express": "^4.21.1",
     "highlight.js": "^11.10.0",
     "isomorphic-fetch": "^3.0.0",
     "next": "14.2.16",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-toastify": "^10.0.6"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.5",
+    "@types/node": "^22.8.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.16",
     "postcss": "^8",
