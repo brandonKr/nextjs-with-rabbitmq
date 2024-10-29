@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import mqConnection from '@/mq/mqconnection';
 
 export default async function handler(req,res){

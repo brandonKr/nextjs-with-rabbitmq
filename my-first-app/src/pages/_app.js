@@ -6,7 +6,7 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>My App</title>
+        <title>rabbit mq test</title>
       </Head>
       <div>
         <RootLayOut>
