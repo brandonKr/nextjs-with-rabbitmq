@@ -10,12 +10,16 @@ concurrently => 서버와 클라이언트 스크립트를 동시에 실행 하�
 ?
 */
 
+dotenv.config({ path: '.env.local' });
+// dotenv.config();
+
 const connectConfig = {
     hostname: process.env.RMQHOST || 'localhost',
     username: process.env.RMQUSER || 'guest', 
     password: process.env.RMQPASS || 'guest',
     rm_que: process.env.RM_QUEUE || 'order',
-    rmport: process.env.RMPORT    || '5672'
+    rmport: process.env.RMPORT    || '5672',
+    vhost: process.env.VHOST || ''
 };
 
 //수신된 메세지 처리
@@ -43,7 +47,7 @@ const main = async() => {
 
     try {
         const connection = await amqp.connect(
-            `amqp://${connectConfig.username}:${connectConfig.password}@${connectConfig.hostname}:${connectConfig.rmport}`
+            `amqp://${connectConfig.username}:${connectConfig.password}@${connectConfig.hostname}:${connectConfig.rmport}/${connectConfig.vhost}`
         );
         console.log('RabbitMQ 서버 연결 성공');
 

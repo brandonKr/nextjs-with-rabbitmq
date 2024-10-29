@@ -5,7 +5,8 @@ const connectConfig = {
     username: process.env.RMQUSER || 'guest', 
     password: process.env.RMQPASS || 'guest',
     rm_que: process.env.RM_QUEUE || 'order',
-    rmport: process.env.RMPORT    || '5672'
+    rmport: process.env.RMPORT    || '5672',
+    vhost: process.env.VHOST || ''
 };
 
 class mqconnection {
@@ -21,7 +22,7 @@ class mqconnection {
 
         try {
             this.connection = await amqp.connect(
-                `amqp://${connectConfig.username}:${connectConfig.password}@${connectConfig.hostname}:${connectConfig.rmport}`
+                `amqp://${connectConfig.username}:${connectConfig.password}@${connectConfig.hostname}:${connectConfig.rmport}/${connectConfig.vhost}`
             );
 
             console.log('que생성용 RabbitMQ 서버 연결 성공');
