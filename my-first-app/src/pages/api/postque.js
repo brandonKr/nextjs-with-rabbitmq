@@ -13,13 +13,7 @@ export default async function handler(req,res){
     await mqConnection.connect();
     const channel = mqConnection.channel;
 
-     // Exchange, Queue 설정
-    // await Promise.all([
-    //   channel.assertExchange(exchange, 'direct'),
-    //   channel.assertQueue(queue),
-    //   channel.bindQueue(queue, exchange, route)
-    // ]);
-
+    //채널생성
     channel.consume(callbackqueue, (msg) => {
       if (msg.properties.correlationId === corr_id) {
         // channel.ack(msg); <== 메세지 처리 결과에 대한 응답인데.. noAck가 true라서 주석처리함
