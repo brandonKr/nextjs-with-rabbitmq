@@ -1,27 +1,40 @@
 import mqConnection from '@/mq/mqconnection';
+import {v4 as uuidv4} from 'uuid';
 
 export default async function handler(req,res){
   try {
     const data = req.body;
-    const exchange = 'robot_ex'  //exchange 메인서버(?) {타입 업체와 협의 해서 결정}
-    const queue = 'order'        //메세지를 저장하는하는 역할 {타입 업체와 협의 해서 결정}
-    const route = 'order_route'  //exchange 서버에서 queue를 확인하는 키 {타입 업체와 협의 해서 결정}
+    const exchange = ''  
+    const queue = ''       
+    const route = 'pennybot-0d3034'  
+    const corr_id = uuidv4();
+    const callbackqueue = 'amq.rabbitmq.reply-to';
 
     await mqConnection.connect();
     const channel = mqConnection.channel;
 
      // Exchange, Queue 설정
-    await Promise.all([
-      channel.assertExchange(exchange, 'direct'),
-      channel.assertQueue(queue),
-      channel.bindQueue(queue, exchange, route)
-    ]);
+    // await Promise.all([
+    //   channel.assertExchange(exchange, 'direct'),
+    //   channel.assertQueue(queue),
+    //   channel.bindQueue(queue, exchange, route)
+    // ]);
+
+    channel.consume(callbackqueue, (msg) => {
+      if (msg.properties.correlationId === corr_id) {
+        // channel.ack(msg); <== 메세지 처리 결과에 대한 응답인데.. noAck가 true라서 주석처리함
+        //처리결과 확인
+        console.log(msg.content.toString());
+      }
+    },{noAck: true});
 
     //메세지 발행
     const sent = channel.publish(
         exchange,
-        route,  
-        Buffer.from(JSON.stringify(data))
+        route, 
+        Buffer.from(JSON.stringify(data)),
+        {correlationId : corr_id,
+          replyTo : callbackqueue}
     );
 
     //메세지 발행이 성공 했으면?

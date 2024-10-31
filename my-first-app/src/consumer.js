@@ -10,7 +10,7 @@ concurrently => 서버와 클라이언트 스크립트를 동시에 실행 하�
 ?
 */
 
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env.consume' });
 // dotenv.config();
 
 const connectConfig = {
@@ -40,10 +40,18 @@ const processMessage = async (content) => {
     }
 };
 
+const getNewQueueParams  = () => {
+    return {
+        // 'x-message-ttl': 600, 
+        // 'x-max-length': 10, 
+        // 'x-max-length-bytes': 5000, 
+    }
+}
+
 const main = async() => {
-    const exchange = 'robot_ex'  //exchange 메인서버(?) {타입 업체와 협의 해서 결정}
-    const queue = 'order'        //메세지를 저장하는하는 역할 {타입 업체와 협의 해서 결정}
-    const route = 'order_route'  //exchange 서버에서 queue를 확인하는 키 {타입 업체와 협의 해서 결정}
+    const exchange = 'pennybot-0d3034/orders_update';
+    const queue = null;        
+    const route = 'pennybot-0d3034';  
 
     try {
         const connection = await amqp.connect(
@@ -53,28 +61,39 @@ const main = async() => {
 
         const channel = await connection.createChannel();
         console.log('채널 생성 성공');
-
-        await channel.assertExchange(exchange,'direct');
-        await channel.assertQueue(connectConfig.rm_que);
-        await channel.bindQueue(queue,exchange,route);
-        console.log('Exchange와 Queue 설정 완료');
-
-        channel.consume(queue, async (message) => {
-            if (message) {
-                try {
-                    await processMessage(message.content);
-                } catch (error) {
-                    console.error('메시지 처리 실패:', error);
-                }
-            }
-        }, { noAck: true });
-        console.log('메시지 수신 대기 중...');
         
+        await channel.assertExchange(exchange,'fanout');
+        await channel.assertQueue('', {
+            exclusive: true,
+            durable: false,
+            autoDelete: true,
+            arguments : getNewQueueParams()
+        }, (err, q) => {
+            if (err) {
+                console.error('Queue 생성 오류:', err);
+                throw err;
+            }   
+            queue = q.queue;
+            console.log('Exchange와 Queue 설정 완료',queue);
+            channel.consume(queue, async (message) => {
+                if (message) {
+                    try {
+                        channel.ack(message);
+                        await processMessage(message.content);
+                    } catch (error) {
+                        console.error('메시지 처리 실패:', error);
+                    }
+                }
+            }, { noAck: true });
+            console.log('메시지 수신 대기 중...');
+        });
+        // 
         connection.on('error', (error) => {
             console.error('RabbitMQ 연결 오류:', error);
         });
         
         process.on('SIGINT', async () => {
+            console.log('끝 RMS ...');
             await channel.close();
             await connection.close();
             process.exit(0);
